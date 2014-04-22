@@ -22,7 +22,7 @@ module.exports = function(grunt, size) {
         }
         cache[filepath] = buffer;
         contents[idx] = filepath;
-        idx = (idx == size ? 0 : idx + 1);
+        idx = (idx == size - 1 ? 0 : idx + 1);
     }
 
     return {
