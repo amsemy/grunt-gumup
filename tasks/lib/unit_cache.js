@@ -18,8 +18,6 @@ module.exports = function() {
         // Unit to file mapping
         units: {},
 
-        addFile
-
     };
 
 };

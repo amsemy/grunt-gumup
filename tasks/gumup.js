@@ -8,39 +8,55 @@
 
 'use strict';
 
+var chalk = require('chalk');
+var file_cache = require('./lib/file_cache');
+var unit_cache = require('./lib/unit_cache');
+
 module.exports = function(grunt) {
 
     grunt.registerMultiTask('gumup', 'Concatenate gumup units.', function () {
 
         // Merge options with these defaults.
         var options = this.options({
+            onResolve: null,
+            cacheSize: 500,
             unitPath: "."
         });
 
+        var fileCache = file_cache(grunt, options.cacheSize);
+        var unitCache = unit_cache(grunt);
+
         // Iterate over all specified file groups.
-        this.files.forEach(function (f) {
-            // Concat specified files.
-            var src = f.src.filter(function (filepath) {
-                // Warn on and remove invalid source files (if nonull was set).
-                if (!grunt.file.exists(filepath)) {
-                    grunt.log.warn('Source file "' + filepath + '" not found.');
-                    return false;
-                } else {
-                    return true;
-                }
-            }).map(function (filepath) {
-                // Read file source.
-                return grunt.file.read(filepath);
-            }).join(grunt.util.normalizelf(options.separator));
+        this.files.forEach(function(file) {
 
-            // Handle options.
-            src += options.punctuation;
+            file.src.forEach(srcFile, function() {
+                // TODO: check file.exists
+                unitCache.addSrc(srcFile);
+            });
 
-            // Write the destination file.
-            grunt.file.write(f.dest, src);
+            var fileList = unitCache.resolve();
+            var srcList = [];
+
+            for (var i = 0, len = fileList.length; i < len; i++) {
+                srcList.push(fileCache.read(fileList[i]));
+            }
+
+            if (typeof options.onResolve === 'function') {
+                // Run callback function
+                options.onResolve.call(this, fileList, file.dest);
+            } else if (options.onResolve) {
+                // Setup the project's Grunt configuration.
+                var value
+                grunt.config.set(options.onResolve, value);
+            } else {
+                // Concat the resolved files
+                var src = srcList.join(options.separator);
+                grunt.file.write(file.dest, src);
+            }
 
             // Print a success message.
-            grunt.log.writeln('File "' + f.dest + '" created.');
+            grunt.log.writeln('File "' + file.dest + '" resolved: ' +
+                chalk.green(fileList.length) + ' units');
         });
 
     });

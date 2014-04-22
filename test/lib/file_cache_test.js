@@ -1,5 +1,7 @@
 'use strict';
 
+var file_cache = require('../../tasks/lib/file_cache');
+
 var gruntStub = {
     callCount: 0,
     stub: function() {
@@ -14,55 +16,52 @@ var gruntStub = {
     }
 };
 
-
-var fileCache = require('../../tasks/lib/file_cache');
-
 exports.file_cache = {
     read: function(test) {
-        var fc = fileCache(gruntStub.stub(), 5);
+        var fileCache = file_cache(gruntStub.stub(), 5);
         var buffer;
 
-        buffer = fc.read("aaa");
+        buffer = fileCache.read("aaa");
         test.equal(gruntStub.callCount, 1);
         test.equal(buffer, "body:aaa");
 
-        buffer = fc.read("aaa");
+        buffer = fileCache.read("aaa");
         test.equal(gruntStub.callCount, 1);
         test.equal(buffer, "body:aaa");
 
-        buffer = fc.read("bbb");
+        buffer = fileCache.read("bbb");
         test.equal(gruntStub.callCount, 2);
         test.equal(buffer, "body:bbb");
 
-        buffer = fc.read("ccc");
+        buffer = fileCache.read("ccc");
         test.equal(gruntStub.callCount, 3);
         test.equal(buffer, "body:ccc");
 
-        buffer = fc.read("ddd");
+        buffer = fileCache.read("ddd");
         test.equal(gruntStub.callCount, 4);
         test.equal(buffer, "body:ddd");
 
-        buffer = fc.read("eee");
+        buffer = fileCache.read("eee");
         test.equal(gruntStub.callCount, 5);
         test.equal(buffer, "body:eee");
 
-        buffer = fc.read("aaa");
+        buffer = fileCache.read("aaa");
         test.equal(gruntStub.callCount, 5);
         test.equal(buffer, "body:aaa");
 
-        buffer = fc.read("fff");
+        buffer = fileCache.read("fff");
         test.equal(gruntStub.callCount, 6);
         test.equal(buffer, "body:fff");
 
-        buffer = fc.read("aaa");
+        buffer = fileCache.read("aaa");
         test.equal(gruntStub.callCount, 7);
         test.equal(buffer, "body:aaa");
 
-        buffer = fc.read("ggg");
+        buffer = fileCache.read("ggg");
         test.equal(gruntStub.callCount, 8);
         test.equal(buffer, "body:ggg");
 
-        buffer = fc.read("bbb");
+        buffer = fileCache.read("bbb");
         test.equal(gruntStub.callCount, 9);
         test.equal(buffer, "body:bbb");
 
