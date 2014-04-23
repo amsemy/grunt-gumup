@@ -25,6 +25,7 @@ module.exports = function(grunt) {
 
         var fileCache = file_cache(grunt, options.cacheSize);
         var unitCache = unit_cache(grunt);
+        var resolvedFiles = {};
 
         // Iterate over all specified file groups.
         this.files.forEach(function(file) {
@@ -33,31 +34,32 @@ module.exports = function(grunt) {
                 // TODO: check file.exists
                 unitCache.addSrc(srcFile);
             });
+            var resolvedSrc = unitCache.resolve();
 
-            var fileList = unitCache.resolve();
-            var srcList = [];
-
-            for (var i = 0, len = fileList.length; i < len; i++) {
-                srcList.push(fileCache.read(fileList[i]));
-            }
-
-            if (typeof options.onResolve === 'function') {
-                // Run callback function
-                options.onResolve.call(this, fileList, file.dest);
-            } else if (options.onResolve) {
-                // Setup the project's Grunt configuration.
-                var value
-                grunt.config.set(options.onResolve, value);
+            // Concat the resolved files
+            if (!options.onResolve) {
+                var buffer = [];
+                for (var i = 0, len = resolvedSrc.length; i < len; i++) {
+                    buffer.push(fileCache.read(resolvedSrc[i]));
+                }
+                var dest = buffer.join(options.separator);
+                grunt.file.write(file.dest, dest);
             } else {
-                // Concat the resolved files
-                var src = srcList.join(options.separator);
-                grunt.file.write(file.dest, src);
+                resolvedFiles[files.dest] = resolvedSrc;
             }
 
             // Print a success message.
             grunt.log.writeln('File "' + file.dest + '" resolved: ' +
-                chalk.green(fileList.length) + ' units');
+                chalk.green(resolvedSrc.length) + ' units');
         });
+
+        if (typeof options.onResolve === 'function') {
+            // Run callback function
+            options.onResolve.call(this, resolvedFiles);
+        } else if (options.onResolve) {
+            // Setup the project's Grunt configuration.
+            grunt.config.set(options.onResolve, resolvedFiles);
+        }
 
     });
 
