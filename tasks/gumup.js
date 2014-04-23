@@ -30,9 +30,9 @@ module.exports = function(grunt) {
         // Iterate over all specified file groups.
         this.files.forEach(function(file) {
 
-            file.src.forEach(srcFile, function() {
+            file.src.forEach(file.src, function(srcFile) {
                 // TODO: check file.exists
-                unitCache.addSrc(srcFile);
+                unitCache.add(srcFile);
             });
             var resolvedSrc = unitCache.resolve();
 
@@ -45,7 +45,7 @@ module.exports = function(grunt) {
                 var dest = buffer.join(options.separator);
                 grunt.file.write(file.dest, dest);
             } else {
-                resolvedFiles[files.dest] = resolvedSrc;
+                resolvedFiles[file.dest] = resolvedSrc;
             }
 
             // Print a success message.

@@ -8,7 +8,7 @@
 
 'use strict';
 
-module.exports = function() {
+module.exports = function(grunt) {
 
     return {
 
@@ -17,6 +17,14 @@ module.exports = function() {
 
         // Unit to file mapping
         units: {},
+
+        add: function(srcFile) {
+
+        },
+
+        resolve: function() {
+
+        }
 
     };
 
