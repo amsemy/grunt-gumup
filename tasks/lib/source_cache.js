@@ -10,22 +10,16 @@
 
 module.exports = function(grunt) {
 
+    var files = {},
+        units = {};
+
     return {
-
-        // File units
-        files: {},
-
-        // Unit to file mapping
-        units: {},
-
         add: function(srcFile) {
 
         },
-
         resolve: function() {
 
         }
-
     };
 
 };

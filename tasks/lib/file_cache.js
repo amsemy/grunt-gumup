@@ -10,11 +10,9 @@
 
 module.exports = function(grunt, size) {
 
-    var cache = {};
-
-    var contents = [];
-
-    var idx = 0;
+    var cache = {},
+        contents = [],
+        idx = 0;
 
     function addToCache(filepath, buffer) {
         if (contents[idx] != null) {
