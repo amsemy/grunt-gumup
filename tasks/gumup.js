@@ -21,12 +21,12 @@ module.exports = function(grunt) {
         var options = this.options({
             cacheSize: 500,
             onResolve: null,
-            runtime: [],
-            unitPath: '.'
+            required: [],
+            unitPath: null
         });
 
         var fileCache = file_cache(grunt, options.cacheSize);
-        var sourceCache = source_cache(fileCache);
+        var sourceCache = source_cache(grunt, fileCache, options);
         var resolvedFiles = {};
 
         // Iterate over all specified file groups.
