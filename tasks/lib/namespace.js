@@ -8,52 +8,54 @@
 
 'use strict';
 
-var Namespace = function(sourceCache) {
-    this._sourceCache = sourceCache;
-    this._sources = [];
+var Namespace = function(unitCache) {
+    this._units = [];
+    this._unitCache = unitCache;
 };
 
-Namespace.prototype.add = function(srcFile) {
-    this._sources.push(this._sourceCache.get(srcFile));
+Namespace.prototype.add = function(fileName) {
+    var unit = this._unitCache.readFile(fileName);
+    this._units.push(unit);
 };
 
 Namespace.prototype.resolve = function() {
-    var sourceCache = this._sourceCache,
-        sources = this._sources,
+    var unitCache = this._unitCache,
+        units = this._units;
+    var namespace = [],
         processed = {},
-        srcFiles = [];
+        result = [];
 
-    for (var s = 0, sLen = this._sources.length; s < sLen; s++) {
-        var queue = [sources[s]];
+    loadNamespace(namespace, units, unitCache);
+
+    for (var i = 0, len = units.length; i < len; i++) {
+        var queue = [units[i]];
         var stack = [];
         var direction = true;
 
-        // Source file can contain few units, so assume that the file is a "big"
-        // unit.
         while (true) {
             // Move in queue or get back via stack.
-            var src = direction ? queue.shift() : stack.pop();
+            var unit = direction ? queue.shift() : stack.pop();
             // Skip processed units.
-            if (direction && processed[src]) {
+            if (direction && processed[unit]) {
                 direction = false;
                 continue;
             }
             // Check for existing unprocessed dependencies.
-            var deps = sourceCache.getDependencies(src, processed);
+            var deps = getDependencies(unit, unitCache, namespace, processed);
             if (deps.length) {
                 if (direction) {
                     queue.unshift(deps);
                 }
-                for (var i = 0, len = stack.length; i < len; i++) {
-                    if (stack[i] === src) {
+                for (var s = 0, sLen = stack.length; s < sLen; s++) {
+                    if (stack[s] === unit) {
                         error('Recursive dependency'); // TODO: print stack
                     }
                 }
-                stack.push(src);
+                stack.push(unit);
                 direction = true;
             } else {
-                processed[src] = true;
-                srcFiles.push(sourceCache.getFileName(src));
+                processed[unit] = true;
+                result.push(unitCache[unit].fileName);
                 direction = false;
                 // Check the exit point.
                 if (!stack.length) {
@@ -63,7 +65,52 @@ Namespace.prototype.resolve = function() {
         }
 
     }
-    return srcFiles;
+    return result;
 };
+
+function getDependencies(unit, unitCache, namespace, processed) {
+    var deps = unitCache[unit].dependencies;
+    var result = [];
+    // Iterate over all unit dependencies.
+    for (var i = 0, iLen = deps.length; i < iLen; i++) {
+        var reqName = deps[i];
+        var depUnit, j, jLen;
+        if (reqName.charAt(reqName.length - 1) == "*") {
+            // Iterate over uncapped `*` declarations.
+            var baseName = reqName.substring(0, reqName.length - 1);
+            for (j = 0, jLen = namespace.length; j < jLen; j++) {
+                depUnit = namespace[j];
+                if (unitCache[depUnit].name.indexOf(baseName) == 0
+                        && !processed[depUnit]) {
+                    result.push(depUnit);
+                }
+            }
+        } else {
+            // A simple dependency.
+            for (j = 0, jLen = namespace.length; j < jLen; j++) {
+                depUnit = namespace[j];
+                if (unitCache[depUnit].name === reqName
+                        && !processed[depUnit]) {
+                    result.push(depUnit);
+                    break;
+                }
+            }
+            throw error("Invalid dependency '" + reqName + "'");
+        }
+    }
+}
+
+function loadNamespace(namespace, units, unitCache) {
+    for (var i = 0, iLen = units.length; i < iLen; i++) {
+        var unit = units[i];
+        namespace.push(unit);
+        var deps = unitCache[unit].dependencies;
+        for (var j = 0, jLen = deps.length; j < jLen; j++) {
+            // TODO: comment about `*`
+            var reqUnit = unitCache.readUnit(deps[j]);
+            namespace.push(reqUnit);
+        }
+    }
+}
 
 module.exports = Namespace;
