@@ -23,26 +23,23 @@ var grunt = require('grunt');
 */
 
 exports.gumup = {
-  setUp: function(done) {
-    // setup here if necessary
-    done();
-  },
-  default_options: function(test) {
-    test.expect(1);
 
-    var actual = grunt.file.read('tmp/default_options');
-    var expected = grunt.file.read('test/expected/default_options');
-    test.equal(actual, expected, 'should describe what the default behavior is.');
+    sample: {
 
-    test.done();
-  },
-  custom_options: function(test) {
-    test.expect(1);
+        'resolve with required units': function (test) {
+            var actual = grunt.file.read('tmp/sample-with-required-units.js');
+            var expected = grunt.file.read('test/expected/sample-with-required-units.js');
+            test.equal(actual, expected);
+            test.done();
+        },
 
-    var actual = grunt.file.read('tmp/custom_options');
-    var expected = grunt.file.read('test/expected/custom_options');
-    test.equal(actual, expected, 'should describe what the custom option(s) behavior is.');
+        'resolve without required units': function (test) {
+            var actual = grunt.file.read('tmp/sample-without-required-units.js');
+            var expected = grunt.file.read('test/expected/sample-without-required-units.js');
+            test.equal(actual, expected);
+            test.done();
+        }
 
-    test.done();
-  },
+    }
+
 };

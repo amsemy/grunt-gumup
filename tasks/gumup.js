@@ -33,8 +33,9 @@ module.exports = function(grunt) {
                 .map(function(filepath) {
                     return path.resolve(filepath);
                 });
+            var resFiles;
             try {
-                var resFiles = gumup.resolve(srcFiles);
+                resFiles = gumup.resolve(srcFiles);
             } catch (e) {
                 grunt.log.error(e);
                 if (e.details != null) {
