@@ -8,10 +8,9 @@
 
 'use strict';
 
+var Gumup = require('gumup');
 var chalk = require('chalk');
-var file_cache = require('./lib/file_cache');
-var namespace = require('./lib/namespace');
-var unit_cache = require('./lib/unit_cache');
+var path = require('path');
 
 module.exports = function(grunt) {
 
@@ -19,53 +18,54 @@ module.exports = function(grunt) {
 
         // Merge options with these defaults.
         var options = this.options({
-            cacheSize: 500,
-            enviroment: {},
             onResolve: null,
-            separator: grunt.util.linefeed,
-            unitPath: null
+            separator: grunt.util.linefeed
         });
 
-        // TODO: set options
-        // TODO: check unitPath
-
-        var fileCache = file_cache(grunt, options.cacheSize);
-        var unitCache = unit_cache(grunt, fileCache, options);
-        var resolvedFiles = {};
+        var gumup = new Gumup(options);
+        var result = {};
 
         // Iterate over all specified file groups.
         this.files.forEach(function(file) {
 
             // Resolve dependencies.
-            var ns = new namespace(unitCache);
-            file.src.forEach(file.src, function(srcFile) {
-                ns.add(srcFile);
-            });
-            var srcFiles = ns.resolve();
+            var srcFiles = file.src
+                .map(function(filepath) {
+                    return path.resolve(filepath);
+                });
+            try {
+                var resFiles = gumup.resolve(srcFiles);
+            } catch (e) {
+                grunt.log.error(e);
+                if (e.details != null) {
+                    grunt.log.error('Details: ' + e.details);
+                }
+                grunt.fail.warn('Task failed.');
+            }
 
             // Concat the resolved files.
             if (!options.onResolve) {
                 var buffer = [];
-                for (var i = 0, len = srcFiles.length; i < len; i++) {
-                    buffer.push(fileCache.read(srcFiles[i]));
+                for (var i = 0, len = resFiles.length; i < len; i++) {
+                    buffer.push(grunt.file.read(resFiles[i]));
                 }
                 var dest = buffer.join(options.separator);
                 grunt.file.write(file.dest, dest);
             } else {
-                resolvedFiles[file.dest] = srcFiles;
+                result[file.dest] = resFiles;
             }
 
             // Print a success message.
             grunt.log.writeln('File "' + file.dest + '" resolved: ' +
-                chalk.green(srcFiles.length) + ' units');
+                chalk.green(resFiles.length) + ' units');
         });
 
         if (typeof options.onResolve === 'function') {
             // Run callback function.
-            options.onResolve.call(this, resolvedFiles);
+            options.onResolve.call(this, result);
         } else if (options.onResolve) {
             // Setup the project's Grunt configuration.
-            grunt.config.set(options.onResolve, resolvedFiles);
+            grunt.config.set(options.onResolve, result);
         }
 
     });

@@ -29,15 +29,34 @@ module.exports = function (grunt) {
         },
 
         // Configuration to be run (and then tested).
-//        gumup: {
-//            default_options: {
-//                options: {
-//                },
-//                files: {
-//                    'tmp/default_options': ['test/fixtures/testing', 'test/fixtures/123']
-//                }
-//            }
-//        },
+        gumup: {
+            sample: {
+                options: {
+                    cwd: 'test/fixtures',
+                    externals: [
+                        {
+                            globals: ['firstLib'],
+                            files: ['third-party/first-lib.js'],
+                            usages: ['sample/lib/first.js']
+                        },
+                        {
+                            globals: ['secondLib'],
+                            files: [
+                                'third-party/third-lib.js',
+                                'third-party/second-lib.js'
+                            ],
+                            usages: ['sample/baz.js']
+                        }
+                    ],
+                    unitPath: ['sample']
+                },
+                files: {
+                    'tmp/sample-without-required-units.js': [
+                        'test/fixtures/sample/main.js'
+                    ]
+                }
+            }
+        },
 
         // Unit tests.
         nodeunit: {
