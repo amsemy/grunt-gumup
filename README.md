@@ -28,6 +28,30 @@ Any specified option will be passed through directly to [Gumup][], thus you can 
 
 [Gumup]: https://github.com/amsemy/gumup
 
+#### cwd
+Type: `String`  
+Default: `'.'`
+
+All `options` paths are relative to this path.
+
+#### encoding
+Type: `String`  
+Default: `'utf-8'`
+
+Unit files encoding.
+
+#### externals
+Type: `GumupOptions~externals[]`  
+Default: `[]`
+
+External units description.
+
+#### gumupSpy
+Type: `GumupOptions~gumupSpy`  
+Default: `GumupSpy`
+
+Constructor of the GumupSpy, used to parse the Gumup units.
+
 #### onResolve
 Type: `String` `Function`  
 Default: `null`
@@ -40,6 +64,12 @@ Type: `String`
 Default: `grunt.util.linefeed`
 
 Concatenated files will be joined on this string. If you're post-processing concatenated JavaScript files with a minifier, you may need to use a semicolon `';'` as the separator.
+
+#### unitPath
+Type: `String[]`  
+Default: `['.']`
+
+Paths that are used to find the Gumup units (absolute or relative to `cwd`).
 
 ### Usage Examples
 
