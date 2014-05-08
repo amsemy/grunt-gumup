@@ -28,6 +28,13 @@ Any specified option will be passed through directly to [Gumup][], thus you can 
 
 [Gumup]: https://github.com/amsemy/gumup
 
+#### onResolve
+Type: `String|Function`
+Default: `null`
+
+Set the resolved dependencies as value into the project's Grunt configuration or pass them as an argument to user callback.
+If it is `null` then the dependencies will be concatenated to the dest files.
+
 #### separator
 Type: `String`
 Default: `grunt.util.linefeed`
