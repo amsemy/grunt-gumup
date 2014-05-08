@@ -28,6 +28,21 @@ Any specified option will be passed through directly to [Gumup][], thus you can 
 
 [Gumup]: https://github.com/amsemy/gumup
 
+#### onResolve
+Type: `String` `Function`  
+Default: `null`
+
+Set the resolved dependencies as value into the project's Grunt configuration or pass them as an argument to user callback.
+If it is `null` then the dependencies will be concatenated to the dest files.
+
+#### separator
+Type: `String`  
+Default: `grunt.util.linefeed`
+
+Concatenated files will be joined on this string. If you're post-processing concatenated JavaScript files with a minifier, you may need to use a semicolon `';'` as the separator.
+
+### Gumup options
+
 #### cwd
 Type: `String`  
 Default: `'.'`
@@ -47,29 +62,36 @@ Default: `[]`
 External units description.
 
 #### gumupSpy
-Type: `GumupOptions~gumupSpy`  
-Default: `GumupSpy`
-
-Constructor of the GumupSpy, used to parse the Gumup units.
-
-#### onResolve
-Type: `String` `Function`  
+Type: `Function`  
 Default: `null`
 
-Set the resolved dependencies as value into the project's Grunt configuration or pass them as an argument to user callback.
-If it is `null` then the dependencies will be concatenated to the dest files.
-
-#### separator
-Type: `String`  
-Default: `grunt.util.linefeed`
-
-Concatenated files will be joined on this string. If you're post-processing concatenated JavaScript files with a minifier, you may need to use a semicolon `';'` as the separator.
+Callback to setup the GumupSpy constructor. It is used to extend Gumup functionality.
+The callback accepts one argumet that is a current implementation of the constructor. You can extend this constructor or return your own.
 
 #### unitPath
 Type: `String[]`  
 Default: `['.']`
 
-Paths that are used to find the Gumup units (absolute or relative to `cwd`).
+Paths that are used to find the Gumup units.
+
+### GumupOptions~externals
+
+#### globals
+Type: `String`  
+Default: `[]`
+
+Global variables that are occuped by the external unit.
+
+#### files
+Type: `String`  
+Default: `[]`
+
+Files of the external unit.
+
+#### usages
+Type: `String`
+
+Gumup unit files that depends from this unit.
 
 ### Usage Examples
 
