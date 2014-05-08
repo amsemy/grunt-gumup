@@ -26,16 +26,38 @@ exports.gumup = {
 
     sample: {
 
-        'resolve with required units': function (test) {
+        'resolve with required units': function(test) {
             var actual = grunt.file.read('tmp/sample-with-required-units.js');
             var expected = grunt.file.read('test/expected/sample-with-required-units.js');
             test.equal(actual, expected);
             test.done();
         },
 
-        'resolve without required units': function (test) {
+        'resolve without required units': function(test) {
             var actual = grunt.file.read('tmp/sample-without-required-units.js');
             var expected = grunt.file.read('test/expected/sample-without-required-units.js');
+            test.equal(actual, expected);
+            test.done();
+        }
+
+    },
+
+    passResultToFunction: {
+
+        'write result to file': function(test) {
+            var actual = grunt.file.read('tmp/pass-result-to-function.txt');
+            var expected = grunt.file.read('test/expected/pass-result-to-function.txt');
+            test.equal(actual, expected);
+            test.done();
+        }
+
+    },
+
+    passResultToTask: {
+
+        'write result to file': function(test) {
+            var actual = grunt.file.read('tmp/pass-result-to-task.txt');
+            var expected = grunt.file.read('test/expected/pass-result-to-task.txt');
             test.equal(actual, expected);
             test.done();
         }

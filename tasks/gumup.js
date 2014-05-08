@@ -41,13 +41,13 @@ module.exports = function(grunt) {
                 if (e.details != null) {
                     grunt.log.error('Details: ' + e.details);
                 }
-                grunt.fail.warn('Task failed.');
+                grunt.fail.warn('Unable to resolve dependencies.');
             }
 
             // Concat the resolved files.
             if (!options.onResolve) {
                 var buffer = [];
-                for (var i = 0, len = resFiles.length; i < len; i++) {
+                for (var i = 0, il = resFiles.length; i < il; i++) {
                     buffer.push(grunt.file.read(resFiles[i]));
                 }
                 var dest = buffer.join(options.separator);
@@ -64,9 +64,11 @@ module.exports = function(grunt) {
         if (typeof options.onResolve === 'function') {
             // Run callback function.
             options.onResolve.call(this, result);
-        } else if (options.onResolve) {
+        } else if (typeof options.onResolve === 'string') {
             // Setup the project's Grunt configuration.
             grunt.config.set(options.onResolve, result);
+        } else if (options.onResolve != null) {
+            grunt.fail.warn('Invalid "onResolve" property value');
         }
 
     });
