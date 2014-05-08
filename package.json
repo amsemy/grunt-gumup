@@ -1,7 +1,7 @@
 {
   "name": "grunt-gumup",
   "description": "Concatenate Gumup units.",
-  "version": "0.1.0-rc.1",
+  "version": "0.1.0-rc.2",
   "homepage": "https://github.com/amsemy/grunt-gumup",
   "author": {
     "name": "Amsemy",
