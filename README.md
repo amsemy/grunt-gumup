@@ -29,14 +29,14 @@ Any specified option will be passed through directly to [Gumup][], thus you can 
 [Gumup]: https://github.com/amsemy/gumup
 
 #### onResolve
-Type: `String|Function`
+Type: `String` `Function`  
 Default: `null`
 
 Set the resolved dependencies as value into the project's Grunt configuration or pass them as an argument to user callback.
 If it is `null` then the dependencies will be concatenated to the dest files.
 
 #### separator
-Type: `String`
+Type: `String`  
 Default: `grunt.util.linefeed`
 
 Concatenated files will be joined on this string. If you're post-processing concatenated JavaScript files with a minifier, you may need to use a semicolon `';'` as the separator.
@@ -50,6 +50,42 @@ This configuration will resolve dependencies of the `main` unit and concatenate 
 grunt.initConfig({
   gumup: {
     dist: {
+      files: {
+        'dest/index.js': ['main.js']
+      },
+    },
+  },
+});
+```
+#### Pass the result to a task 
+This configuration will resolve dependencies of the `main` unit and pass them to `uglify:dist` task.
+
+```js
+grunt.initConfig({
+  gumup: {
+    dist: {
+      options: {
+        onResolve: 'uglify.dist.files'
+      },
+      files: {
+        'dest/index.js': ['main.js']
+      },
+    },
+  },
+});
+```
+#### Process the result with a user callback
+This configuration will resolve dependencies of the `main` unit and log them.
+
+```js
+grunt.initConfig({
+  gumup: {
+    dist: {
+      options: {
+        onResolve: function(fileList) {
+          console.log(fileList);
+        }
+      },
       files: {
         'dest/index.js': ['main.js']
       },
