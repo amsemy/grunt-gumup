@@ -24,9 +24,10 @@ Task targets, files and options may be specified according to the Grunt [Configu
 
 ### Options
 
-Any specified option will be passed through directly to [Gumup][], thus you can specify any option that Gumup supports.
+Any specified option will be passed through directly to [Gumup][], thus you can specify any option that [Gumup supports][].
 
 [Gumup]: https://github.com/amsemy/gumup
+[Gumup supports]: https://github.com/amsemy/gumup/blob/master/src/node/index.js
 
 #### onResolve
 Type: `String` `Function`  
@@ -104,11 +105,12 @@ grunt.initConfig({
     dist: {
       files: {
         'dest/index.js': ['main.js']
-      },
-    },
-  },
+      }
+    }
+  }
 });
 ```
+
 #### Pass the result to a task 
 This configuration will resolve dependencies of the `main` unit and pass them to `uglify:dist` task.
 
@@ -121,11 +123,12 @@ grunt.initConfig({
       },
       files: {
         'dest/index.js': ['main.js']
-      },
-    },
-  },
+      }
+    }
+  }
 });
 ```
+
 #### Process the result with a user callback
 This configuration will resolve dependencies of the `main` unit and log them.
 
@@ -140,9 +143,47 @@ grunt.initConfig({
       },
       files: {
         'dest/index.js': ['main.js']
+      }
+    }
+  }
+});
+```
+#### Sample from the tests
+
+```js
+grunt.initConfig({
+  gumup: {
+    sample: {
+      options: {
+        cwd: 'test/fixtures',
+        externals: [
+          {
+            globals: ['firstLib'],
+            files: ['third-party/first-lib.js'],
+            usages: ['sample/lib/first.js']
+          },
+          {
+            globals: ['secondLib'],
+            files: [
+              'third-party/third-lib.js',
+              'third-party/second-lib.js'
+            ],
+            usages: ['sample/baz.js']
+          }
+        ],
+        unitPath: ['sample']
       },
-    },
-  },
+      files: {
+        'tmp/sample-with-required-units.js': [
+          'test/fixtures/sample/main.js',
+          'test/fixtures/sample/util/*'
+        ],
+        'tmp/sample-without-required-units.js': [
+          'test/fixtures/sample/main.js'
+        ]
+      }
+    }
+  }
 });
 ```
 
