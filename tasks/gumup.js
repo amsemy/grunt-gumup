@@ -57,7 +57,7 @@ module.exports = function(grunt) {
             }
 
             // Print a success message.
-            grunt.log.writeln('File "' + file.dest + '" resolved: ' +
+            grunt.log.writeln('File ' + chalk.cyan(file.dest) + ' resolved: ' +
                 chalk.green(resFiles.length) + ' units');
         });
 
